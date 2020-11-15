@@ -2,10 +2,10 @@ const DEBUG = true
 const log = DEBUG ? console.log.bind(console) : function () { };
 
 // configure the library
+// Example for raw: 
 const libraryInfo = {
     name: 'widget',
-    version: 'main',
-    gitlabProject: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar/main/widget.js',
     forceDownload: true
 }
 
@@ -60,9 +60,8 @@ async function downloadLibrary(library) {
     if (fm.fileExists(path) && !forceDownload) {
         log("Not downloading library file")
     } else {
-        let libraryUrl = library.gitlabProject + '/' + library.version + '/' + library.name + '.js'
-        log("Downloading library file '" + libraryUrl + "' to '" + path + "'")
-        const req = new Request(libraryUrl)
+        log("Downloading library file '" + library.raw + "' to '" + path + "'")
+        const req = new Request(library.raw)
         let libraryFile = await req.load()
         fm.write(path, libraryFile)
     }
