@@ -1,31 +1,27 @@
 const DEBUG = true
 const log = DEBUG ? console.log.bind(console) : function () { };
 
-// configure the library
-// Example for raw: 
 const libraryInfo = {
     name: 'widget',
     raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar/main/widget.js',
     forceDownload: true
 }
 
-// download and import library
 let library = importModule(await downloadLibrary(libraryInfo))
 
-// create the widget
 const params = {
     widgetParameter: args.widgetParameter,
     debug: DEBUG
 }
-const widget = await library.createWidget(params)
 
-// preview the widget
 if (!config.runsInWidget) {
-    await widget.presentSmall()
+    library.clickWidget()
+} else {
+    const widget = await library.createWidget(params)
+    Script.setWidget(widget)
+    Script.complete()
 }
 
-Script.setWidget(widget)
-Script.complete()
 
 /**
  * - creates directory for library if not existing
