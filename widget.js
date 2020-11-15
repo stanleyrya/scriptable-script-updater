@@ -1,14 +1,12 @@
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: red; icon-glyph: download;
-const DEBUG = false
+const DEBUG = true
 const log = DEBUG ? console.log.bind(console) : function () { };
 
 // configure the library
 const libraryInfo = {
-    name: 'HelloWorldWidgetLibrary',
-    version: 'master',
-    gitlabProject: 'https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget-libraries'
+    name: 'widget',
+    version: 'main',
+    gitlabProject: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar',
+    forceDownload: true
 }
 
 // download and import library
@@ -40,21 +38,29 @@ async function downloadLibrary(library) {
 
     let scriptPath = module.filename
     let libraryDir = scriptPath.replace(fm.fileName(scriptPath, true), fm.fileName(scriptPath, false))
+    log("scriptPath: " + scriptPath)
+    log("libraryDir: " + libraryDir)
 
     if (fm.fileExists(libraryDir) && !fm.isDirectory(libraryDir)) {
+        log("library exists but is not a directory!")
         fm.remove(libraryDir)
     }
     if (!fm.fileExists(libraryDir)) {
+        log("library does not exist!")
         fm.createDirectory(libraryDir)
     }
+    
     let libraryFilename = library.name + '_' + library.version + '.js'
     let path = fm.joinPath(libraryDir, libraryFilename)
-
     let forceDownload = (library.forceDownload) ? library.forceDownload : false
+    log("libraryFilename: " + libraryFilename)
+    log("path: " + path)
+    log("forceDownload: " + forceDownload)
+    
     if (fm.fileExists(path) && !forceDownload) {
         log("Not downloading library file")
     } else {
-        let libraryUrl = library.gitlabProject + '/-/raw/' + library.version + '/' + library.name + '.js'
+        let libraryUrl = library.gitlabProject + '/' + library.version + '/' + library.name + '.js'
         log("Downloading library file '" + libraryUrl + "' to '" + path + "'")
         const req = new Request(libraryUrl)
         let libraryFile = await req.load()
