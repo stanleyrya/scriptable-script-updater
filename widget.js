@@ -1,25 +1,25 @@
 const DEBUG = true
+const debugParams = {monthDiff: -1}
+
 const log = DEBUG ? console.log.bind(console) : function () { };
 
 const libraryInfo = {
-    name: 'widget',
+    name: 'busyness-calendar',
     raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar/main/widget.js',
     forceDownload: true
 }
 
 let library = importModule(await downloadLibrary(libraryInfo))
 
-const params = {
-    widgetParameter: args.widgetParameter,
-    debug: DEBUG
-}
+const params = DEBUG ? debugParams : args.widgetParameter
 
-if (!config.runsInWidget) {
-    library.clickWidget()
-} else {
-    const widget = await library.createWidget(params)
+const widget = await library.createWidget(params)
+
+if (config.runsInWidget) {
     Script.setWidget(widget)
     Script.complete()
+} else {
+    await widget.presentMedium()
 }
 
 
@@ -46,7 +46,7 @@ async function downloadLibrary(library) {
         fm.createDirectory(libraryDir)
     }
     
-    let libraryFilename = library.name + '_' + library.version + '.js'
+    let libraryFilename = library.name + '.js'
     let path = fm.joinPath(libraryDir, libraryFilename)
     let forceDownload = (library.forceDownload) ? library.forceDownload : false
     log("libraryFilename: " + libraryFilename)
