@@ -1,25 +1,40 @@
-const DEBUG = true
-const debugParams = {monthDiff: -1}
+const DEBUG = false
+// Example widget params:
+// {"apiKey": "XXX"}
+const debugParams = {apiKey: 'XXX', debugParams: true}
 
-const log = DEBUG ? console.log.bind(console) : function () { };
+const log = console.log.bind(console)
 
 const libraryInfo = {
-    name: 'busyness-calendar',
-    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-widget-busyness-calendar/main/widget.js',
+    name: 'interest-map',
+    raw: 'https://raw.githubusercontent.com/bring-larry-to-life/scriptable-widget-interest-map/main/widget.js',
     forceDownload: true
 }
 
 let library = importModule(await downloadLibrary(libraryInfo))
 
-const params = DEBUG ? debugParams : args.widgetParameter
-
-const widget = await library.createWidget(params)
+let params;
+if (DEBUG) {
+    log("Debug flag found. Using debug parameters")
+    params = debugParams;
+} else if (args.widgetParameter) {
+    log("Widget parameters found. Using widget parameters")
+    params = JSON.parse(args.widgetParameter);
+} else {
+    log("No widget parameters found. Using debug parameters")
+    params = debugParams;
+}
+log("params: " + JSON.stringify(params));
 
 if (config.runsInWidget) {
+    const widget = await library.createWidget(params)
     Script.setWidget(widget)
     Script.complete()
-} else {
+} else if (DEBUG) {
+    const widget = await library.createWidget(params)
     await widget.presentMedium()
+} else {
+    await library.clickWidget(params)
 }
 
 
