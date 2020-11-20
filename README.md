@@ -17,3 +17,7 @@ While it's pretty easy to edit this script to take in the widget URL as a parame
 2. If you are using parameters for your widget it's annoying to configure with the github URLs (the text box is pretty small).
 
 If you'd like to parameterize it though, feel free! :)
+
+### My code isn't updating!
+
+If you are using Github it's worth noting that Github caches their raw CDN for 5 minutes. There seems to be ways around this (other CDNs, calling their API for a commit hash then loading that hash directly, etc.) but this widget doesn't use those yet.
