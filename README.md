@@ -1,11 +1,13 @@
 # scriptable-universal-widget
 
+Tired of editing widgets on your phone? Then this widget script was made for you!
+
+This script acts as a proxy to a widget "library" hosted somewhere online. It calls a configured endpoint to download the widget's code then simply invokes it. This means that you can write code using your computer, push it to a code hosting service, then see the results on your phone! Currently tested with Github and Gitlab.
+
 ### Original Inspiration:
 https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget/-/tree/master
 
-### How it works
-
-#### Setup
+### Setup
 
 1. Copy the widget code into your Scriptable app.
 2. Configure the library to be used. You can use some of the examples below.
@@ -16,8 +18,50 @@ https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget/-/tre
 4. Make sure the name of your script tells you what library you are using so it's easy to remember which one it is! While this script could be parameterized to load any module, right now it needs to be copied every time you want another type of widget.
 5. Run it!
 
-### Example Modules
+### Converting a Widget into a Widget Module
 
+#### 1. Create expected methods
+
+Converting a widget into a widget module is relatively easy. The proxy code expects the widget to have the following methods defined:
+* [CreateWidget(params)](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L73-L107): Given optional parameters, create and return a widget object.
+* [ClickWidget(params)](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L65-L71): Given optional parameters, run any code you would like when the widget is clicked.
+
+In my expereince `CreateWidget(params)` usually already exists. `ClickWidget(params)` can be added like this:
+```
+async function clickWidget(params) {
+	console.log("Click!");
+}
+```
+
+#### 2. Comment out or remove any code that runs automatically
+
+When a widget is invoked there must be some code that calls `CreateWidget(params)` and displays it. This code has already been moved to this proxy widget and running it from the library widget causes it to fail. Usually it's only a few lines and can be commented out pretty easily. While I don't like commented out code in general, this is good to comment out in case you want to edit your script locally again without the proxy in the future.
+
+Here are two examples of commenting out code that runs automatically:  
+* https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/4c789f5d2ef1e737c89de5c68816416db2f1c5f1/widget.js#L55-L62
+* https://github.com/stanleyrya/scriptable-widget-busyness-calendar/blob/c0be17e8812ddd7f15da18cf29e978f695f1bede/widget.js#L40-L56
+
+#### 3. [Optional] Parameterize any code that is hard-coded to the widget
+
+Now that the library widget is going to be run from the proxy widget you may want to replace some hard-coded constants in the library widget with parameters to `CreateWidget(params)` and `ClickWidget(params)`. This is really only necessary when you want to:
+1. Reuse the widget code to create multiple widgets on your home screen.
+2. Use a sensitive constant like an API key.
+
+Here's an example:  
+https://github.com/bring-larry-to-life/scriptable-widget-interest-map/commit/3eca517c5724ab6ff299f3e1385554d9012734de#diff-4f17b275f05478d235d65f5f33b51bf1d6873c8e60ef9fa399006bc4a8f70d2d
+
+
+#### 4. Export the functions at the bottom of your library widget
+
+This is the easiest step. [Just add the following to the bottom of your widget:](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L196-L199)
+```
+module.exports = {
+	createWidget,
+	clickWidget
+}
+```
+
+### Example Modules
 
 #### [Interest Map](https://github.com/bring-larry-to-life/scriptable-widget-interest-map)
 
