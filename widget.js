@@ -1,14 +1,16 @@
 const DEBUG = false
-// Example widget params:
-// {"apiKey": "XXX"}
-const debugParams = {apiKey: 'XXX', debugParams: true}
-
 const log = console.log.bind(console)
 
 const libraryInfo = {
     name: 'interest-map',
     raw: 'https://raw.githubusercontent.com/bring-larry-to-life/scriptable-widget-interest-map/main/widget.js',
     forceDownload: true
+}
+
+// Example widget params:
+// {"apiKey": "XXX"}
+const debugParams = {
+    apiKey: 'XXX'
 }
 
 let library = importModule(await downloadLibrary(libraryInfo))
