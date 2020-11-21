@@ -13,8 +13,6 @@ const debugParams = {
     apiKey: 'XXX'
 }
 
-let library = importModule(await downloadLibrary(libraryInfo))
-
 let params;
 if (DEBUG) {
     log("Debug flag found. Using debug parameters")
@@ -28,17 +26,7 @@ if (DEBUG) {
 }
 log("params: " + JSON.stringify(params));
 
-if (config.runsInWidget) {
-    const widget = await library.createWidget(params)
-    Script.setWidget(widget)
-    Script.complete()
-} else if (DEBUG) {
-    const widget = await library.createWidget(params)
-    await widget.presentMedium()
-} else {
-    await library.clickWidget(params)
-}
-
+importModule(await downloadLibrary(libraryInfo))(params)
 
 /**
  * - creates directory for library if not existing
@@ -50,7 +38,7 @@ async function downloadLibrary(library) {
     let fm = FileManager.local()
 
     let scriptPath = module.filename
-    let libraryDir = scriptPath.replace(fm.fileName(scriptPath, true), fm.fileName(scriptPath, false))
+    let libraryDir = scriptPath.replace(fm.fileName(scriptPath, true), '')
     log("scriptPath: " + scriptPath)
     log("libraryDir: " + libraryDir)
 
