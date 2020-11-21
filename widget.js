@@ -10,7 +10,8 @@ const libraryInfo = {
 // Example widget params:
 // {"apiKey": "XXX"}
 const debugParams = {
-    apiKey: 'XXX'
+    apiKey: 'XXX',
+    debug: DEBUG
 }
 
 let params;
