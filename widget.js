@@ -67,5 +67,5 @@ async function downloadLibrary(library) {
         fm.write(path, libraryFile)
     }
 
-    return fm.fileName(scriptPath, false) + '/' + libraryFilename
+    return library.name + '.js'
 }
