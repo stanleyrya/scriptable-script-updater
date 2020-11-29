@@ -1,8 +1,12 @@
+# ** Note: This is outdated! New vision can be used [here](https://github.com/stanleyrya/scriptable-widget-updater)! **
+
 # scriptable-universal-widget
+
+### Description
 
 Tired of editing widgets on your phone? Then this widget script was made for you!
 
-This script acts as a proxy to a widget "library" hosted somewhere online. It calls a configured endpoint to download the widget's code then simply invokes it. This means that you can write code using your computer, push it to a code hosting service, then see the results on your phone! Currently tested with Github and Gitlab.
+This script acts as a proxy to another widget hosted somewhere online. It calls a configured endpoint to download the widget's code then simply invokes it by loading it as a module. This means that you can write code using your computer, push it to a code hosting service, then see the results on your phone! Currently tested with Github and Gitlab.
 
 ### Original Inspiration:
 https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget/-/tree/master
@@ -18,48 +22,56 @@ https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget/-/tre
 4. Make sure the name of your script tells you what library you are using so it's easy to remember which one it is! While this script could be parameterized to load any module, right now it needs to be copied every time you want another type of widget.
 5. Run it!
 
-### Converting a Widget into a Widget Module
+### Converting a Widget to work with this Script
 
-#### 1. Create expected methods
+#### 1. Create async code and module code
 
-Converting a widget into a widget module is relatively easy. The proxy code expects the widget to have the following methods defined:
-* [CreateWidget(params)](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L73-L107): Given optional parameters, create and return a widget object.
-* [ClickWidget(params)](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L65-L71): Given optional parameters, run any code you would like when the widget is clicked.
+Converting a widget to work with this script is relatively easy. The widget will have two entry points: 1. the widget getting run itself (from the homescreen, etc.) and 2. from the proxy script using `importModule`. This causes some issues when the script uses the "await" keyword at the top level. It's not possible to use the method `importModule` on a script that uses top-level-await and that's the only way to invoke the code without making additional changes (supporting query params, etc.).
 
-In my expereince `CreateWidget(params)` usually already exists. `ClickWidget(params)` can be added like this:
+To get around this limitation we can use the following pattern. We build two async functions that get run automatically, one for the script and one for the proxy script (that gets exported as a module). To prevent them both from running when being imported we can use the script's name to check where the code is running before doing anything.
+
+While it looks complicated it's not that bad. Just move the logic that builds the widget to a "run" method and copy-paste this code to the bottom of the file. Make sure to change the script name from `ENTER-SCRIPT-NAME-HERE` to the name of the script.
+
 ```
-async function clickWidget(params) {
-	console.log("Click!");
+// Runs when the script itself is invoked
+(async function() {
+	if (Script.name() === 'ENTER-SCRIPT-NAME-HERE') {
+		let params;
+		if (args.widgetParameter) {
+			params = JSON.parse(args.widgetParameter);
+		}
+
+		if (params) {
+			console.log("Using params: " + JSON.stringify(params))
+			await run(params);
+		} else {
+			console.log("No valid parameters!")
+		}
+	}
+}()).catch((err) => {
+	console.error(err);
+});
+
+// Runs when a proxy script is invoked
+module.exports = function(params) {
+	(async function() {
+		if (Script.name() !== 'ENTER-SCRIPT-NAME-HERE') {
+			await run(params);
+		}
+	}()).catch((err) => {
+		console.error(err);
+	});
 }
 ```
 
-#### 2. Comment out or remove any code that runs automatically
+#### 2. [Optional] Parameterize any code that is hard-coded to the widget
 
-When a widget is invoked there must be some code that calls `CreateWidget(params)` and displays it. This code has already been moved to this proxy widget and running it from the library widget causes it to fail. Usually it's only a few lines and can be commented out pretty easily. While I don't like commented out code in general, this is good to comment out in case you want to edit your script locally again without the proxy in the future.
-
-Here are two examples of commenting out code that runs automatically:  
-* https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/4c789f5d2ef1e737c89de5c68816416db2f1c5f1/widget.js#L55-L62
-* https://github.com/stanleyrya/scriptable-widget-busyness-calendar/blob/c0be17e8812ddd7f15da18cf29e978f695f1bede/widget.js#L40-L56
-
-#### 3. [Optional] Parameterize any code that is hard-coded to the widget
-
-Now that the library widget is going to be run from the proxy widget you may want to replace some hard-coded constants in the library widget with parameters to `CreateWidget(params)` and `ClickWidget(params)`. This is really only necessary when you want to:
+Now that the widget is going to be run from the proxy you may want to replace some hard-coded constants with parameters. This is really only necessary when you want to:
 1. Reuse the widget code to create multiple widgets on your home screen.
 2. Use a sensitive constant like an API key.
 
 Here's an example:  
 https://github.com/bring-larry-to-life/scriptable-widget-interest-map/commit/3eca517c5724ab6ff299f3e1385554d9012734de#diff-4f17b275f05478d235d65f5f33b51bf1d6873c8e60ef9fa399006bc4a8f70d2d
-
-
-#### 4. Export the functions at the bottom of your library widget
-
-This is the easiest step. [Just add the following to the bottom of your widget:](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/0957cdc95279d106212b46a60bcf8860d52c3be6/widget.js#L196-L199)
-```
-module.exports = {
-	createWidget,
-	clickWidget
-}
-```
 
 ### Example Modules
 
@@ -109,7 +121,6 @@ If you'd like to parameterize it though, feel free! :)
 
 ### Debugging
 
-* By default this widget will call `clickWidget()` whenever it's invoked outside of a widget. If you set the `DEBUG` variable to true it will instead build and present the widget in a medium size. This is useful for debugging why the widget won't load.
 * You can either add your parameters to the `debugParams` section in code or put them into the widget settings on your homescreen. I personally prefer just using the code itself since it's easier to edit.
 * If the module doesn't load then check the Javascript code in the module for syntax errors.
 
