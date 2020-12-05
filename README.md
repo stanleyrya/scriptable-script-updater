@@ -22,7 +22,7 @@ https://gitlab.com/sillium-scriptable-projects/universal-scriptable-widget/-/tre
 
 ### Converting a Widget to use "Stored Parameters"
 
-If you'd like to use the "Stored Parameters" feature all you have to do is add [these functions](https://github.com/stanleyrya/scriptable-playground/blob/2b9cf55c6df1d89d043b50f4b29d86c368942784/read-write-stored-parameters.js#L3-L50) to your script and [add logic to read it](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/7a72c224305fb16eb96438e8044d6bd7f5497eed/widget.js#L445-L459). I recommend supporting multiple input types in case you'd like to share your script and the people downloading it are new to scripting.
+If you'd like to use the "Stored Parameters" feature all you have to do is add [these functions](https://github.com/stanleyrya/scriptable-playground/blob/2b9cf55c6df1d89d043b50f4b29d86c368942784/read-write-stored-parameters.js#L3-L50) to your script and [add logic to read it](https://github.com/bring-larry-to-life/scriptable-widget-interest-map/blob/7a72c224305fb16eb96438e8044d6bd7f5497eed/widget.js#L445-L459). The name should be `Script.name()`. I recommend supporting multiple input types in case you'd like to share your script and the people downloading it are new to scripting.
 
 ### My code isn't updating!
 
@@ -42,7 +42,7 @@ The `apiKey` in the parameters is a Google Maps API key. Make sure not to post i
     name: 'interest-map',
     raw: 'https://raw.githubusercontent.com/bring-larry-to-life/scriptable-widget-interest-map/main/widget.js',
     forceDownload: false,
-    storedParameters: {"apiKey": "testtest"}
+    storedParameters: { apiKey: 'XXX', forceWidgetView: false, writeLogsIfException: false, logPerformanceMetrics: false }
 }
 ```
 
