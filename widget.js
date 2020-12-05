@@ -1,13 +1,12 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-purple; icon-glyph: cloud-download-alt;
-
 const scripts = [{
     type: 'raw',
     name: 'interest-map',
     raw: 'https://raw.githubusercontent.com/bring-larry-to-life/scriptable-widget-interest-map/main/widget.js',
     forceDownload: false,
-    storedParameters: { "apiKey": "testtest" }
+    storedParameters: {"apiKey": "testtest", "forceWidgetView": false, "writeLogsIfException": true, "logPerformanceMetrics": true }
 }, {
     type: 'raw',
     name: 'busyness-calendar',
@@ -28,6 +27,11 @@ const scripts = [{
     type: 'raw',
     name: 'reverse-geocode-tests',
     raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/reverse-geocode-tests.js',
+    forceDownload: false
+}, {
+    type: 'raw',
+    name: 'write-logs',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/write-logs',
     forceDownload: false
 }]
 
@@ -183,6 +187,13 @@ async function createWidget(results) {
     lastUpdatedDate.font = Font.thinMonospacedSystemFont(10);
     lastUpdatedDate.textColor = Color.white();
     lastUpdatedDate.rightAlignText();
+
+    // If nothing is being updated, set refresh interval to 1 day because it isn't useful.
+    if (!results.updated && !results.failed) {
+        const hours = 24;
+        const interval = 1000 * 60 * 60 * hours;
+        widget.refreshAfterDate = new Date(Date.now() + interval);
+    }
 
     return widget;
 }
