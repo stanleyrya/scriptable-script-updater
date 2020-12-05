@@ -6,7 +6,7 @@ const scripts = [{
     name: 'interest-map',
     raw: 'https://raw.githubusercontent.com/bring-larry-to-life/scriptable-widget-interest-map/main/widget.js',
     forceDownload: false,
-    storedParameters: {"apiKey": "testtest", "forceWidgetView": false, "writeLogsIfException": true, "logPerformanceMetrics": true }
+    storedParameters: { "apiKey": "XXX", "forceWidgetView": false, "writeLogsIfException": true, "logPerformanceMetrics": true }
 }, {
     type: 'raw',
     name: 'busyness-calendar',
