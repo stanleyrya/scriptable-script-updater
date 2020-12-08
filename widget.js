@@ -15,13 +15,13 @@ const scripts = [{
     storedParameters: { "monthDiff": 0 }
 }, {
     type: 'raw',
-    name: 'append-to-performance-metrics',
-    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/append-to-performance-metrics.js',
+    name: 'performance-debugger',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/performance-debugger/performance-debugger.js',
     forceDownload: false
 }, {
     type: 'raw',
-    name: 'read-write-stored-parameters',
-    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/read-write-stored-parameters.js',
+    name: 'json-file-manager',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/json-file-manager/json-file-manager.js',
     forceDownload: false
 }, {
     type: 'raw',
@@ -30,10 +30,23 @@ const scripts = [{
     forceDownload: false
 }, {
     type: 'raw',
-    name: 'write-logs',
-    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/write-logs',
+    name: 'file-logger',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/file-logger/file-logger.js',
     forceDownload: false
 }]
+
+/**
+ * Class that can read and write JSON objects using the file system.
+ *
+ * This is a minified version but it can be replaced with the full version by copy pasting this code!
+ * https://github.com/stanleyrya/scriptable-playground/blob/main/json-file-manager/json-file-manager.js
+ *
+ * Usage:
+ *  * write(relativePath, jsonObject): Writes JSON object to a relative path.
+ *  * read(relativePath): Reads JSON object from a relative path.
+ */
+class JSONFileManager{write(e,r){const t=this.getFileManager(),i=this.getCurrentDir()+e,l=e.split("/");if(l>1){const e=l[l.length-1],r=i.replace("/"+e,"");t.createDirectory(r,!0)}if(t.fileExists(i)&&t.isDirectory(i))throw"JSON file is a directory, please delete!";t.writeString(i,JSON.stringify(r))}read(e){const r=this.getFileManager(),t=this.getCurrentDir()+e;if(!r.fileExists(t))throw"JSON file does not exist! Could not load: "+t;if(r.isDirectory(t))throw"JSON file is a directory! Could not load: "+t;r.downloadFileFromiCloud(t);const i=JSON.parse(r.readString(t));if(null!==i)return i;throw"Could not read file as JSON! Could not load: "+t}getFileManager(){try{return FileManager.iCloud()}catch(e){return FileManager.local()}}getCurrentDir(){const e=this.getFileManager(),r=module.filename;return r.replace(e.fileName(r,!0),"")}}
+const jsonFileManager = new JSONFileManager();
 
 async function update() {
     let results = {
@@ -60,32 +73,10 @@ async function update() {
 
 async function processScript(script) {
     if (script.storedParameters) {
-        writeStoredParameters(script.name, script.storedParameters)
+        jsonFileManager.write("storage/" + script.name + ".json", script.storedParameters)
     }
 
     return await download(script);
-}
-
-/**
- * Attempts to write parameters to the file ./storage/name.json
- */
-function writeStoredParameters(name, params) {
-    const fm = getFileManager();
-    const storageDir = getCurrentDir() + "storage";
-    const parameterPath = storageDir + "/" + name + ".json";
-
-    if (!fm.fileExists(storageDir)) {
-        console.log("Storage folder does not exist! Creating now.");
-        fm.createDirectory(storageDir);
-    } else if (!fm.isDirectory(storageDir)) {
-        throw ("Storage folder exists but is not a directory!");
-    }
-
-    if (fm.fileExists(parameterPath) && fm.isDirectory(parameterPath)) {
-        throw ("Parameter file is a directory, please delete!");
-    }
-
-    fm.writeString(parameterPath, JSON.stringify(params));
 }
 
 /**
