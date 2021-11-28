@@ -15,6 +15,31 @@ const scripts = [{
     storedParameters: { "monthDiff": 0 }
 }, {
     type: 'raw',
+    name: 'word-cloud',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/word-cloud/word-cloud.js',
+    forceDownload: false
+}, {
+    type: 'raw',
+    name: 'minified-word-cloud',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/word-cloud/minified-word-cloud.js',
+    forceDownload: false
+}, {
+    type: 'raw',
+    name: 'word-cloud-demo',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/word-cloud/word-cloud-demo.js',
+    forceDownload: false
+}, {
+    type: 'raw',
+    name: 'event-frequency-word-cloud',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/event-frequency-word-cloud.js',
+    forceDownload: false
+}, {
+    type: 'raw',
+    name: 'last-day-free',
+    raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/last-day-free.js',
+    forceDownload: false
+}, {
+    type: 'raw',
     name: 'performance-debugger',
     raw: 'https://raw.githubusercontent.com/stanleyrya/scriptable-playground/main/performance-debugger/performance-debugger.js',
     forceDownload: false
